@@ -6,6 +6,13 @@ import Ubuntu.Components.Popups 0.1
 import "components"
 import "left_zero_pad.js" as LeftZeroPad
 
+/*
+ * Timer app for Freshbooks
+ *
+ * @author Jonah Dahlquist <jonah@nucleussystems.com>
+ * @copyright Copyright 2014 Jonah Dahlquist
+ * @license BSD 3
+ */
 
 MainView {
 
@@ -181,16 +188,6 @@ MainView {
             }
         }
 
-        ActivityIndicator {
-            anchors.right: parent.right
-            running: projectsFetcher.status !== XmlListModel.Ready
-        }
-
-        ActivityIndicator {
-            anchors.right: parent.right
-            running: tasksFetcher.status !== XmlListModel.Ready
-        }
-
         Column {
             id: pageLayout
 
@@ -211,6 +208,15 @@ MainView {
                     onClicked: PopupUtils.open(projectSelector, selectorProject)
                     width: pageLayout.width
                     gradient: UbuntuColors.greyGradient
+
+                    ActivityIndicator {
+                        anchors {
+                            right: parent.right
+                            verticalCenter: parent.verticalCenter
+                            rightMargin: units.gu(1)
+                        }
+                        running: projectsFetcher.status !== XmlListModel.Ready
+                    }
                 }
             }
 
@@ -224,6 +230,15 @@ MainView {
                     onClicked: PopupUtils.open(taskSelector, selectorTask)
                     width: pageLayout.width
                     gradient: UbuntuColors.greyGradient
+
+                    ActivityIndicator {
+                        anchors {
+                            right: parent.right
+                            verticalCenter: parent.verticalCenter
+                            rightMargin: units.gu(1)
+                        }
+                        running: tasksFetcher.status !== XmlListModel.Ready
+                    }
                 }
             }
 
@@ -311,6 +326,7 @@ MainView {
                         visible = false
                         pause.visible = true
                         currentTime.startTimer()
+                        revertMessage()
                     }
                 }
 
@@ -335,6 +351,91 @@ MainView {
                     visible: false
                     gradient: UbuntuColors.greyGradient
                     onClicked: currentTimeInput.endEdit()
+                }
+            }
+
+            Row {
+
+                Button {
+                    id: save
+                    width: pageLayout.width
+                    text: "Save"
+                    property bool isSaving: false
+                    onClicked: {
+                        if (currentTime.total == 0) {
+                            cannotTimer.restart()
+                            return
+                        }
+
+                        var http = new XMLHttpRequest()
+                        var url = "https://c4f327f50410448fa2b68bd800d6cc0f@nucleussystems.freshbooks.com/api/2.1/xml-in"
+                        var body = "<?xml version=\"1.0\" encoding=\"utf-8\"?>" +
+                                   "<request method=\"time_entry.create\">" +
+                                       "<time_entry>" +
+                                           "<project_id>" + projects.getProjectId(selectorProject.projectIndex) + "</project_id>" +
+                                           "<task_id>" + tasks.getTaskId(selectorTask.taskIndex) + "</task_id>" +
+                                           "<hours>" + (currentTime.total / 3600) + "</hours>" +
+                                       "</time_entry>" +
+                                   "</request>"
+                        http.open("POST", url, true);
+                        http.setRequestHeader("Content-length", body.length);
+                        http.setRequestHeader("Connection", "close");
+                        http.onreadystatechange = function() {
+                            if (http.readyState == 4) {
+                                isSaving = false
+                                if (http.responseXML.documentElement.attributes.status.nodeValue === "ok") {
+                                    currentTime.total = 0
+                                    currentTime.setTime(currentTime.total)
+                                    savedTimer.restart()
+                                }
+                            }
+                        }
+                        http.send(body)
+                        isSaving = true
+                    }
+                    function revertMessage() {
+                        text = "Save"
+                    }
+
+                }
+            }
+
+            Row {
+
+                ActivityIndicator {
+                    width: pageLayout.width
+                    visible: save.isSaving
+                    running: save.isSaving
+                }
+
+                Timer {
+                    id: savedTimer
+                    interval: 2000
+                    running: false
+                    repeat: false
+                }
+
+                Label {
+                    visible: savedTimer.running
+                    text: "Saved"
+                    horizontalAlignment: Text.AlignHCenter
+                    width: pageLayout.width
+                    fontSize: "large"
+                }
+
+                Timer {
+                    id: cannotTimer
+                    interval: 2000
+                    running: false
+                    repeat: false
+                }
+
+                Label {
+                    visible: cannotTimer.running
+                    text: "Cannot save time entry"
+                    horizontalAlignment: Text.AlignHCenter
+                    width: pageLayout.width
+                    fontSize: "large"
                 }
             }
         }
