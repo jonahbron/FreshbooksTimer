@@ -230,10 +230,82 @@ MainView {
             Row {
                 spacing: units.gu(1)
 
+                Label {
+                    id: currentTime
+                    text: "00:00:00"
+                    fontSize: "x-large"
+                    width: (pageLayout.width / 2) - (units.gu(1) / 2)
+                    horizontalAlignment: Text.AlignHCenter
+                    property int total: 0
+                    property int startTime: 0
+                    function setTime(seconds) {
+                        var floor_hours = Math.max(0, Math.floor(seconds / 3600)).leftZeroPad(2)
+                        seconds = seconds % 3600
+                        var floor_minutes = Math.max(0, Math.floor(seconds / 60)).leftZeroPad(2)
+                        seconds = seconds % 60
+                        var floor_seconds = Math.max(0, Math.floor(seconds)).leftZeroPad(2)
+                        text = "" + floor_hours + ":" + floor_minutes + ":" + floor_seconds
+                    }
+                    function startTimer() {
+                        startTime = Date.now() / 1000
+                        timer.start()
+                    }
+                    function stopTimer() {
+                        timer.stop()
+                        total += (Date.now() / 1000) - startTime
+                        setTime(total)
+                        currentTimeInput.text = String((total / 3600).toFixed(3))
+                    }
+                    function renderTime() {
+                        setTime(((Date.now() / 1000) - startTime) + total)
+                    }
+
+                    Timer {
+                        id: timer
+                        interval: 200
+                        running: false
+                        repeat: true
+                        onTriggered: {
+                            currentTime.renderTime()
+                        }
+                    }
+                    MouseArea {
+                        anchors.fill: parent
+                        onClicked: currentTimeInput.startEdit()
+                    }
+                }
+
+                TextField {
+                    id: currentTimeInput
+                    errorHighlight: false
+                    width: currentTime.width
+                    text: "0.0"
+                    font.pixelSize: FontUtils.sizeToPixels("large")
+                    height: start.height
+                    visible: false
+                    function startEdit() {
+                        if (timer.running == false) {
+                            currentTime.visible = false
+                            currentTimeInput.visible = true
+                            start.visible = false
+                            set.visible = true
+                            currentTimeInput.forceActiveFocus()
+                        }
+                    }
+                    function endEdit() {
+                        currentTime.visible = true
+                        currentTimeInput.visible = false
+                        start.visible = true
+                        set.visible = false
+                        currentTime.total = Math.max(0, Math.round(parseFloat(text) * 3600))
+                        currentTime.setTime(currentTime.total)
+                    }
+                }
+
                 Button {
                     id: start
-                    width: pageLayout.width
-                    height: units.gu(10)
+                    width: (pageLayout.width / 2) - (units.gu(1) / 2)
+
                     text: "Start"
                     onClicked: {
                         visible = false
@@ -254,47 +326,15 @@ MainView {
                         currentTime.stopTimer()
                     }
                 }
-            }
 
-            Row {
-                Label {
-                    id: currentTime
-                    text: "00:00:00"
-                    fontSize: "x-large"
-                    width: pageLayout.width
-                    horizontalAlignment: Text.AlignHCenter
-                    property int total: 0
-                    property int startTime: 0
-                    function setTime(seconds) {
-                        var floor_hours = Math.max(0, Math.floor(seconds / 3600)).leftZeroPad(2)
-                        seconds = seconds % 3600
-                        var floor_minutes = Math.max(0, Math.floor(seconds / 60)).leftZeroPad(2)
-                        seconds = seconds % 60
-                        var floor_seconds = Math.max(0, Math.floor(seconds)).leftZeroPad(2)
-                        text = "" + floor_hours + ":" + floor_minutes + ":" + floor_seconds
-                    }
-                    function startTimer() {
-                        startTime = Date.now() / 1000
-                        timer.start()
-                    }
-                    function stopTimer() {
-                        timer.stop()
-                        total += (Date.now() / 1000) - startTime
-                        setTime(total)
-                    }
-                    function renderTime() {
-                        setTime(((Date.now() / 1000) - startTime) + total)
-                    }
-
-                    Timer {
-                        id: timer
-                        interval: 200
-                        running: false
-                        repeat: true
-                        onTriggered: {
-                            currentTime.renderTime()
-                        }
-                    }
+                Button {
+                    id: set
+                    width: start.width
+                    height: start.height
+                    text: "Set"
+                    visible: false
+                    gradient: UbuntuColors.greyGradient
+                    onClicked: currentTimeInput.endEdit()
                 }
             }
         }
