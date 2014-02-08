@@ -1,13 +1,11 @@
 import QtQuick 2.0
-import Ubuntu.Components 0.1
 import QtQuick.XmlListModel 2.0
+import Ubuntu.Components 0.1
 import Ubuntu.Components.ListItems 0.1
 import Ubuntu.Components.Popups 0.1
 import "components"
+import "left_zero_pad.js" as LeftZeroPad
 
-/*!
-    \brief MainView with a Label and Button elements.
-*/
 
 MainView {
 
@@ -54,6 +52,7 @@ MainView {
 
         Component.onCompleted: {
             projectsFetcher.load()
+            LeftZeroPad.setup()
         }
 
         XmlListModel {
@@ -211,6 +210,7 @@ MainView {
                     text: projects.getName(projectIndex)
                     onClicked: PopupUtils.open(projectSelector, selectorProject)
                     width: pageLayout.width
+                    gradient: UbuntuColors.greyGradient
                 }
             }
 
@@ -223,6 +223,78 @@ MainView {
                     text: tasks.getName(taskIndex)
                     onClicked: PopupUtils.open(taskSelector, selectorTask)
                     width: pageLayout.width
+                    gradient: UbuntuColors.greyGradient
+                }
+            }
+
+            Row {
+                spacing: units.gu(1)
+
+                Button {
+                    id: start
+                    width: pageLayout.width
+                    height: units.gu(10)
+                    text: "Start"
+                    onClicked: {
+                        visible = false
+                        pause.visible = true
+                        currentTime.startTimer()
+                    }
+                }
+
+                Button {
+                    id: pause
+                    width: start.width
+                    height: start.height
+                    text: "Pause"
+                    visible: false
+                    onClicked: {
+                        visible = false
+                        start.visible = true
+                        currentTime.stopTimer()
+                    }
+                }
+            }
+
+            Row {
+                Label {
+                    id: currentTime
+                    text: "00:00:00"
+                    fontSize: "x-large"
+                    width: pageLayout.width
+                    horizontalAlignment: Text.AlignHCenter
+                    property int total: 0
+                    property int startTime: 0
+                    function setTime(seconds) {
+                        var floor_hours = Math.max(0, Math.floor(seconds / 3600)).leftZeroPad(2)
+                        seconds = seconds % 3600
+                        var floor_minutes = Math.max(0, Math.floor(seconds / 60)).leftZeroPad(2)
+                        seconds = seconds % 60
+                        var floor_seconds = Math.max(0, Math.floor(seconds)).leftZeroPad(2)
+                        text = "" + floor_hours + ":" + floor_minutes + ":" + floor_seconds
+                    }
+                    function startTimer() {
+                        startTime = Date.now() / 1000
+                        timer.start()
+                    }
+                    function stopTimer() {
+                        timer.stop()
+                        total += (Date.now() / 1000) - startTime
+                        setTime(total)
+                    }
+                    function renderTime() {
+                        setTime(((Date.now() / 1000) - startTime) + total)
+                    }
+
+                    Timer {
+                        id: timer
+                        interval: 200
+                        running: false
+                        repeat: true
+                        onTriggered: {
+                            currentTime.renderTime()
+                        }
+                    }
                 }
             }
         }
