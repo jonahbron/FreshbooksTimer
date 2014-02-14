@@ -347,11 +347,7 @@ MainView {
                         width: (pageLayout.width / 2) - (units.gu(1) / 2)
                         visible: !timer.running && !currentTimeInput.visible
                         text: "Start"
-                        onClicked: {
-                            visible = false
-                            pause.visible = true
-                            currentTime.startTimer()
-                        }
+                        onClicked: currentTime.startTimer()
                     }
 
                     Button {
@@ -360,11 +356,7 @@ MainView {
                         height: start.height
                         text: "Pause"
                         visible: timer.running && !currentTimeInput.visible
-                        onClicked: {
-                            visible = false
-                            start.visible = true
-                            currentTime.stopTimer()
-                        }
+                        onClicked: currentTime.stopTimer()
                     }
 
                     Button {
@@ -417,9 +409,6 @@ MainView {
                             }
                             http.send(body)
                             isSaving = true
-                        }
-                        function revertMessage() {
-                            text = "Save"
                         }
 
                     }
