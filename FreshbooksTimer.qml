@@ -271,28 +271,40 @@ MainView {
                         fontSize: "x-large"
                         width: (pageLayout.width / 2) - (units.gu(1) / 2)
                         horizontalAlignment: Text.AlignHCenter
-                        property int total: 0
+                        property int time: 0
+                        property int lastTime: 0
                         property int startTime: 0
                         function setTime(seconds) {
+                            time = seconds
+                            lastTime = time
+                        }
+
+                        function startTimer() {
+                            if (startTime == 0) {
+                                startTime = Date.now() / 1000
+                                timer.start()
+                            }
+                        }
+                        function stopTimer() {
+                            if (startTime != 0) {
+                                timer.stop()
+                                tick()
+                                currentTimeInput.text = String((time / 3600).toFixed(3))
+                                startTime = 0
+                            }
+                            lastTime = time
+                        }
+                        function tick() {
+                            time = ((Date.now() / 1000) - startTime) + lastTime
+                        }
+                        onTimeChanged: {
+                            var seconds = time
                             var floor_hours = Math.max(0, Math.floor(seconds / 3600)).leftZeroPad(2)
                             seconds = seconds % 3600
                             var floor_minutes = Math.max(0, Math.floor(seconds / 60)).leftZeroPad(2)
                             seconds = seconds % 60
                             var floor_seconds = Math.max(0, Math.floor(seconds)).leftZeroPad(2)
                             text = "" + floor_hours + ":" + floor_minutes + ":" + floor_seconds
-                        }
-                        function startTimer() {
-                            startTime = Date.now() / 1000
-                            timer.start()
-                        }
-                        function stopTimer() {
-                            timer.stop()
-                            total += (Date.now() / 1000) - startTime
-                            setTime(total)
-                            currentTimeInput.text = String((total / 3600).toFixed(3))
-                        }
-                        function renderTime() {
-                            setTime(((Date.now() / 1000) - startTime) + total)
                         }
 
                         Timer {
@@ -301,7 +313,7 @@ MainView {
                             running: false
                             repeat: true
                             onTriggered: {
-                                currentTime.renderTime()
+                                currentTime.tick()
                             }
                         }
                         MouseArea {
@@ -317,36 +329,28 @@ MainView {
                         text: "0.0"
                         font.pixelSize: FontUtils.sizeToPixels("large")
                         height: start.height
-                        visible: false
+                        visible: !currentTime.visible
                         function startEdit() {
-                            if (timer.running == false) {
-                                currentTime.visible = false
-                                currentTimeInput.visible = true
-                                start.visible = false
-                                set.visible = true
-                                currentTimeInput.forceActiveFocus()
-                            }
+                            currentTime.stopTimer()
+                            currentTime.visible = false
+                            currentTimeInput.forceActiveFocus()
+                            currentTimeInput.selectAll()
                         }
                         function endEdit() {
                             currentTime.visible = true
-                            currentTimeInput.visible = false
-                            start.visible = true
-                            set.visible = false
-                            currentTime.total = Math.max(0, Math.round(parseFloat(text) * 3600))
-                            currentTime.setTime(currentTime.total)
+                            currentTime.setTime(Math.max(0, Math.floor(parseFloat(text) * 3600)))
                         }
                     }
 
                     Button {
                         id: start
                         width: (pageLayout.width / 2) - (units.gu(1) / 2)
-
+                        visible: !timer.running && !currentTimeInput.visible
                         text: "Start"
                         onClicked: {
                             visible = false
                             pause.visible = true
                             currentTime.startTimer()
-                            revertMessage()
                         }
                     }
 
@@ -355,7 +359,7 @@ MainView {
                         width: start.width
                         height: start.height
                         text: "Pause"
-                        visible: false
+                        visible: timer.running && !currentTimeInput.visible
                         onClicked: {
                             visible = false
                             start.visible = true
@@ -368,7 +372,7 @@ MainView {
                         width: start.width
                         height: start.height
                         text: "Set"
-                        visible: false
+                        visible: currentTimeInput.visible
                         gradient: UbuntuColors.greyGradient
                         onClicked: currentTimeInput.endEdit()
                     }
@@ -382,10 +386,12 @@ MainView {
                         text: "Save"
                         property bool isSaving: false
                         onClicked: {
-                            if (currentTime.total == 0) {
+                            if (currentTime.time == 0) {
                                 cannotTimer.restart()
                                 return
                             }
+
+                            currentTime.stopTimer()
 
                             var http = new XMLHttpRequest()
                             var url = "https://c4f327f50410448fa2b68bd800d6cc0f@nucleussystems.freshbooks.com/api/2.1/xml-in"
@@ -394,7 +400,7 @@ MainView {
                                     "<time_entry>" +
                                     "<project_id>" + projects.getProjectId(selectorProject.projectIndex) + "</project_id>" +
                                     "<task_id>" + tasks.getTaskId(selectorTask.taskIndex) + "</task_id>" +
-                                    "<hours>" + (currentTime.total / 3600) + "</hours>" +
+                                    "<hours>" + (currentTime.time / 3600) + "</hours>" +
                                     "</time_entry>" +
                                     "</request>"
                             http.open("POST", url, true);
@@ -404,8 +410,7 @@ MainView {
                                 if (http.readyState == 4) {
                                     isSaving = false
                                     if (http.responseXML.documentElement.attributes.status.nodeValue === "ok") {
-                                        currentTime.total = 0
-                                        currentTime.setTime(currentTime.total)
+                                        currentTime.setTime(0)
                                         savedTimer.restart()
                                     }
                                 }
