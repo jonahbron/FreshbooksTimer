@@ -1,6 +1,8 @@
 import QtQuick 2.0
 import QtWebKit 3.0
+import QtWebKit.experimental 1.0
 import Ubuntu.Components 0.1
+import "../oauth.js" as OAuth
 
 Page {
     title: i18n.tr("Settings")
@@ -40,31 +42,37 @@ Page {
                 width: settingsLayout.width
                 height: settingsLayout.width
                 id: loginView
-                onUrlChanged: OAuth.urlChanged(url)
+                onTitleChanged: {
+                    var verifier = OAuth.getVerifier(title)
+                    if (verifier) {
+                        console.log(verifier)
+                        OAuth.request(
+                            OAuth.url(account, "access", OAuth.config({
+                                oauth_verifier: verifier,
+                                oauth_token: oauth_token
+                            })),
+                            function(responseText) {
+                                var response = responseText.parseQuery()
+                                options.oauth_token = response.oauth_token
+                                options.freshbooks_account = account
+                            }
+                        )
+                    }
+                }
+                onLoadingChanged: {
+                    if (loadRequest.status == WebView.LoadSucceededStatus) {
+                        OAuth.exposeToken(loginView)
+                    }
+                }
                 property string account: ""
+                property string oauth_token: ""
                 function getToken() {
-                    var http = new XMLHttpRequest()
-                    var url = "https://" + account + ".freshbooks.com/oauth/oauth_request.php?"
-                    var data = {
-                        oauth_consumer_key: "nucleussystems",
-                        oauth_signature_method: "PLAINTEXT",
-                        oauth_signature: "mHASXW64WpgvPMGYg5CqD9Wy6kUC7gm9D&",
-                        oauth_version: "1.0",
-                        oauth_timestamp: parseInt(String(Date.now() / 1000)),
-                        oauth_nonce: Math.random().toString(36),
-                        oauth_callback: "oob",
-                    }
-                    for (var key in data) {
-                        url += encodeURIComponent(key) + "=" + encodeURIComponent(data[key]) + "&"
-                    }
-                    http.open("POST", url, true);
-                    http.setRequestHeader("Connection", "close");
-                    http.onreadystatechange = function() {
-                        if (http.readyState == 4) {
-                            console.log(http.responseText)
-                        }
-                    }
-                    http.send()
+                    OAuth.request(OAuth.url(account, "request", OAuth.config({})), function(responseText) {
+                        var response = responseText.parseQuery()
+                        oauth_token = response.oauth_token
+                        loginView.url = OAuth.url(account, "authorize", {oauth_token: oauth_token})
+
+                    })
                 }
             }
         }

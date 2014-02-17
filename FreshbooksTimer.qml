@@ -5,6 +5,7 @@ import Ubuntu.Components.ListItems 0.1
 import Ubuntu.Components.Popups 0.1
 import "components"
 import "left_zero_pad.js" as LeftZeroPad
+import "parse_query.js" as ParseQuery
 
 /*
  * Timer app for Freshbooks
@@ -34,11 +35,18 @@ MainView {
 
     property real margins: units.gu(2)
 
+    Item {
+        id: options
+        property string freshbooks_account: ""
+        property string oauth_token: ""
+    }
+
     PageStack {
 
         id: pageStack
         Component.onCompleted: {
             LeftZeroPad.setup()
+            ParseQuery.setup()
             push(main)
         }
 
