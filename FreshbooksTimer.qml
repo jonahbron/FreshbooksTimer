@@ -101,7 +101,9 @@ MainView {
                     }
                 }
 
-                TaskTimer {}
+                TaskTimer {
+                    id: timer
+                }
 
                 Row {
 

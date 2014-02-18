@@ -6,6 +6,7 @@ Button {
     text: "Save"
     property bool isSaving: false
     onClicked: {
+        var currentTime = timer.currentTime
         if (currentTime.time == 0) {
             cannotTimer.restart()
             return
@@ -29,7 +30,8 @@ Button {
         http.onreadystatechange = function() {
             if (http.readyState == 4) {
                 isSaving = false
-                if (http.responseXML.documentElement.attributes.status.nodeValue === "ok") {
+                // Have to use regex, parsing XML throws stack error
+                if (http.responseText.match(/status=\"ok\"/)) {
                     currentTime.setTime(0)
                     savedTimer.restart()
                 }

@@ -2,6 +2,7 @@ import QtQuick 2.0
 import Ubuntu.Components 0.1
 
 Row {
+    property alias currentTime: currentTime
     spacing: units.gu(1)
 
     Label {
@@ -21,12 +22,12 @@ Row {
         function startTimer() {
             if (startTime == 0) {
                 startTime = Date.now() / 1000
-                timer.start()
+                ticker.start()
             }
         }
         function stopTimer() {
             if (startTime != 0) {
-                timer.stop()
+                ticker.stop()
                 tick()
                 currentTimeInput.text = String((time / 3600).toFixed(3))
                 startTime = 0
@@ -47,7 +48,7 @@ Row {
         }
 
         Timer {
-            id: timer
+            id: ticker
             interval: 200
             running: false
             repeat: true
@@ -79,15 +80,15 @@ Row {
             currentTimeInput.selectAll()
         }
         function endEdit() {
-            currentTime.visible = true
             currentTime.setTime(Math.max(0, Math.floor(parseFloat(text) * 3600)))
+            currentTime.visible = true
         }
     }
 
     Button {
         id: start
         width: (pageLayout.width / 2) - (units.gu(1) / 2)
-        visible: !timer.running && !currentTimeInput.visible
+        visible: !ticker.running && !currentTimeInput.visible
         text: "Start"
         onClicked: currentTime.startTimer()
     }
@@ -97,7 +98,7 @@ Row {
         width: start.width
         height: start.height
         text: "Pause"
-        visible: timer.running && !currentTimeInput.visible
+        visible: ticker.running && !currentTimeInput.visible
         onClicked: currentTime.stopTimer()
     }
 

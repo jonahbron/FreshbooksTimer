@@ -14,4 +14,12 @@ OptionSelector {
             tasks.loadByProjectId(projects.getProjectId(index))
         }
     }
+    height: model.count > 0 ? undefined : units.gu(6.2)
+
+    ActivityIndicator {
+        running: tasks.count < 1
+        visible: running
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.verticalCenter: parent.verticalCenter
+    }
 }
