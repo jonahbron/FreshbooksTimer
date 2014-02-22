@@ -32,6 +32,7 @@ MainView {
 
     width: units.gu(40)
     height: units.gu(75)
+    backgroundColor: "#648c0f"
 
     property real margins: units.gu(2)
 

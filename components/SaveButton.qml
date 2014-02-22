@@ -1,7 +1,7 @@
 import QtQuick 2.0
 import Ubuntu.Components 0.1
 
-Button {
+GreenButton {
     width: pageLayout.width
     text: "Save"
     property bool isSaving: false

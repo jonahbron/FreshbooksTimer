@@ -85,7 +85,7 @@ Row {
         }
     }
 
-    Button {
+    GreenButton {
         id: start
         width: (pageLayout.width / 2) - (units.gu(1) / 2)
         visible: !ticker.running && !currentTimeInput.visible
@@ -93,7 +93,7 @@ Row {
         onClicked: currentTime.startTimer()
     }
 
-    Button {
+    GreenButton {
         id: pause
         width: start.width
         height: start.height

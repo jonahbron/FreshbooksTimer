@@ -29,7 +29,7 @@ Page {
             }
         }
         Row {
-            Button {
+            GreenButton {
                 text: "Sign In"
                 onClicked: {
                     loginView.account = systemName.text
