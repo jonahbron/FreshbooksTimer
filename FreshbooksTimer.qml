@@ -1,5 +1,4 @@
 import QtQuick 2.0
-import QtQuick.Controls 1.1
 import QtQuick.Window 2.0
 import QtQuick.XmlListModel 2.0
 import Ubuntu.Components 0.1
@@ -22,18 +21,6 @@ Window {
     width: units.gu(40)
     height: units.gu(75)
     title: "Freshbooks Timer"
-
-    MenuBar {
-        Menu {
-            text: "File"
-            MenuItem {
-                 text: "Quit"
-                 shortcut: "Ctrl+Q"
-                 iconSource: images/quit.png
-                 onTriggered: Qt.quit()
-            }
-        }
-    }
 
     MainView {
 
