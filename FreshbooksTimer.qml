@@ -108,6 +108,10 @@ Window {
 
                     spacing: units.gu(1)
 
+                    TaskTimer {
+                        id: timer
+                    }
+
                     Row {
 
                         ProjectSelector {
@@ -119,10 +123,6 @@ Window {
                         TaskSelector {
                             id: taskSelector
                         }
-                    }
-
-                    TaskTimer {
-                        id: timer
                     }
 
                     Row {
