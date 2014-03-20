@@ -17,11 +17,13 @@ Page {
         }
 
         Row {
+            id: labelRow
             Label {
                 text: i18n.tr("Freshbooks Account Name")
             }
         }
         Row {
+            id: systemNameRow
             TextField {
                 id: systemName
                 text: ""
@@ -29,6 +31,7 @@ Page {
             }
         }
         Row {
+            id: buttonRow
             GreenButton {
                 text: "Sign In"
                 onClicked: {
@@ -41,7 +44,7 @@ Page {
         Row {
             WebView {
                 width: settingsLayout.width
-                height: settingsLayout.width
+                height: settingsLayout.height - labelRow.height - systemNameRow.height - buttonRow.height - units.gu(3)
                 visible: false
                 id: loginView
                 onTitleChanged: {

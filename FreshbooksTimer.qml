@@ -38,8 +38,13 @@ Window {
         */
         //automaticOrientation: true
 
-        width: units.gu(40)
-        height: units.gu(75)
+        anchors {
+            top: parent.top
+            right: parent.right
+            bottom: parent.bottom
+            left: parent.left
+        }
+
         backgroundColor: "#648c0f"
 
         property real margins: units.gu(2)
