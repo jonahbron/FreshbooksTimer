@@ -75,7 +75,7 @@ Window {
                     ToolbarButton {
                         action: Action {
                             text: "Settings"
-                            iconSource: Qt.resolvedUrl("/usr/share/icons/ubuntu-mobile/actions/scalable/settings.svg")
+                            iconSource: Qt.resolvedUrl("img/settings.svg")
                             onTriggered: pageStack.push(settings)
                         }
                     }
