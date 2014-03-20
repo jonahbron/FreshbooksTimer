@@ -1,5 +1,6 @@
 import QtQuick 2.0
 import QtQuick.XmlListModel 2.0
+import "../oauth.js" as OAuth
 
 XmlListModel {
     query: "/response/tasks/task"
@@ -8,19 +9,14 @@ XmlListModel {
     XmlRole { name: "name"; query: "name/string()" }
 
     function loadByProjectId(project_id) {
-        var http = new XMLHttpRequest()
-        var url = "https://c4f327f50410448fa2b68bd800d6cc0f@nucleussystems.freshbooks.com/api/2.1/xml-in"
-        var body = "<?xml version=\"1.0\" encoding=\"utf-8\"?><request method=\"task.list\"><project_id>" + project_id + "</project_id></request>"
-        http.open("POST", url, true);
-        http.setRequestHeader("Content-length", body.length);
-        http.setRequestHeader("Connection", "close");
-        http.onreadystatechange = function() {
-            if (http.readyState == 4) {
-                xml = http.responseText
-                reload()
-            }
-        }
-        http.send(body)
+        OAuth.apiCall(
+                    options,
+                    "<?xml version=\"1.0\" encoding=\"utf-8\"?><request method=\"task.list\"><project_id>" + project_id + "</project_id></request>",
+                    function(responseText) {
+                        xml = responseText
+                        reload()
+                    }
+                    )
     }
     function getName(idx) {
         return (idx >= 0 && idx < count) ? get(idx).name : "";

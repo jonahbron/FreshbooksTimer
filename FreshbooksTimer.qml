@@ -7,6 +7,7 @@ import Ubuntu.Components.Popups 0.1
 import "components"
 import "left_zero_pad.js" as LeftZeroPad
 import "parse_query.js" as ParseQuery
+import "oauth.js" as OAuth
 
 /*
  * Timer app for Freshbooks
@@ -32,9 +33,9 @@ Window {
         applicationName: "com.ubuntu.developer.jonahbron.FreshbooksTimer"
 
         /*
-     This property enables the application to change orientation
-     when the device is rotated. The default is false.
-    */
+        This property enables the application to change orientation
+        when the device is rotated. The default is false.
+        */
         //automaticOrientation: true
 
         width: units.gu(40)
@@ -43,10 +44,12 @@ Window {
 
         property real margins: units.gu(2)
 
-        Item {
+        Options {
             id: options
-            property string freshbooks_account: ""
-            property string oauth_token: ""
+
+            onAuthenticationChanged: {
+                projects.load()
+            }
         }
 
         PageStack {
@@ -55,7 +58,11 @@ Window {
             Component.onCompleted: {
                 LeftZeroPad.setup()
                 ParseQuery.setup()
+
                 push(main)
+                if (!OAuth.canRequest(options)) {
+                    push(oauthPage)
+                }
             }
 
             Page {
@@ -163,6 +170,10 @@ Window {
 
             SettingsPage {
                 id: settings
+                visible: false
+            }
+            OAuthPage {
+                id: oauthPage
                 visible: false
             }
         }
