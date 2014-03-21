@@ -22,7 +22,7 @@ Page {
                     options.oauthTokenSecret = ""
                     options.freshbooksAccount = ""
                 } else {
-                    pageStack.push(oauthPage)
+                    oauthPage.show()
                 }
             }
         }
