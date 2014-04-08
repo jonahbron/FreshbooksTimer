@@ -1,6 +1,6 @@
 [Desktop Entry]
 Name=FreshbooksTimer
-Comment=My project description
+Comment=Track time and save to Freshbooks
 Exec=/usr/bin/qmlscene $@ /usr/share/FreshbooksTimer/FreshbooksTimer.qml
 Icon=img/icon.svg
 Terminal=false
