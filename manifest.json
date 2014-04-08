@@ -8,7 +8,7 @@
             "desktop": "FreshbooksTimer.desktop"
         }
     },
-    "maintainer": "Jonah Dahlquist",
+    "maintainer": "Jonah Dahlquist <jonah@nucleussystems.com>s",
     "name": "com.nucleussystems.app.freshbookstimer",
     "title": "FreshbooksTimer",
     "version": "0.1"
