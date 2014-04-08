@@ -2,7 +2,7 @@
 Name=FreshbooksTimer
 Comment=My project description
 Exec=/usr/bin/qmlscene $@ /usr/share/FreshbooksTimer/FreshbooksTimer.qml
-Icon=/usr/share/FreshbooksTimer/img/icon.svg
+Icon=img/icon.svg
 Terminal=false
 Type=Application
 X-Ubuntu-Touch=true
