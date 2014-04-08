@@ -1,6 +1,6 @@
 {
     "architecture": "all",
-    "description": "description of FreshbooksTimer",
+    "description": "Track time and save to Freshbooks",
     "framework": "ubuntu-sdk-13.10",
     "hooks": {
         "FreshbooksTimer": {
@@ -8,8 +8,8 @@
             "desktop": "FreshbooksTimer.desktop"
         }
     },
-    "maintainer": "",
-    "name": "com.ubuntu.developer.username.freshbookstimer",
+    "maintainer": "Jonah Dahlquist",
+    "name": "com.nucleussystems.app.freshbookstimer",
     "title": "FreshbooksTimer",
     "version": "0.1"
 }
