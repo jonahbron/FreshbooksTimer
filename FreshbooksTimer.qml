@@ -123,7 +123,7 @@ Window {
 
                     layouts: [
                         ConditionalLayout {
-                            name: "column"
+                            name: "1-column"
                             when: pageLayout.width <= units.gu(70)
 
                             Column {
@@ -166,7 +166,7 @@ Window {
                         },
 
                         ConditionalLayout {
-                            name: "row"
+                            name: "2-column"
                             when: pageLayout.width > units.gu(70)
                             id: tabletSize
 
