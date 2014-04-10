@@ -113,10 +113,18 @@ Window {
                     id: pageLayout
 
                     anchors.fill: parent
+                    onCurrentLayoutChanged: {
+                        if (currentLayout === tabletSize.name) {
+                            projectSelector.expanded = true
+                        } else {
+                            projectSelector.expanded = false
+                        }
+                    }
+
                     layouts: [
                         ConditionalLayout {
-                            name: "row"
-                            when: pageLayout.width > units.gu(50)
+                            name: "column"
+                            when: pageLayout.width <= units.gu(70)
 
                             Column {
                                 anchors.fill: parent
@@ -152,6 +160,63 @@ Window {
                                     anchors.left: parent.left
                                     anchors.right: parent.right
                                     height: units.gu(6.2)
+                                }
+
+                            }
+                        },
+
+                        ConditionalLayout {
+                            name: "row"
+                            when: pageLayout.width > units.gu(70)
+                            id: tabletSize
+
+                            Row {
+                                anchors.fill: parent
+                                anchors.margins: units.gu(1)
+                                spacing: units.gu(1)
+                                Column {
+                                    anchors.top: parent.top
+                                    anchors.bottom: parent.bottom
+                                    width: (parent.width / 2) - units.gu(0.5)
+                                    spacing: units.gu(1)
+
+                                    ItemLayout {
+                                        item: "projectSelector"
+                                        anchors.left: parent.left
+                                        anchors.right: parent.right
+                                        height: Math.max(projectSelector.implicitHeight, units.gu(6.2))
+                                    }
+                                    ItemLayout {
+                                        item: "taskSelector"
+                                        anchors.left: parent.left
+                                        anchors.right: parent.right
+                                        height: Math.max(taskSelector.implicitHeight, units.gu(6.2))
+                                    }
+                                }
+                                Column {
+                                    anchors.top: parent.top
+                                    anchors.bottom: parent.bottom
+                                    width: (parent.width / 2) - units.gu(0.5)
+                                    spacing: units.gu(1)
+
+                                    ItemLayout {
+                                        item: "timer"
+                                        anchors.left: parent.left
+                                        anchors.right: parent.right
+                                        height: units.gu(6.2)
+                                    }
+                                    ItemLayout {
+                                        item: "save"
+                                        anchors.left: parent.left
+                                        anchors.right: parent.right
+                                        height: units.gu(6.2)
+                                    }
+                                    ItemLayout {
+                                        item: "indicators"
+                                        anchors.left: parent.left
+                                        anchors.right: parent.right
+                                        height: units.gu(6.2)
+                                    }
                                 }
                             }
                         }
