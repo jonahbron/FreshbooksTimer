@@ -20,14 +20,12 @@ import "oauth.js" as OAuth
 Window {
     id: topWindow
     visible: true
-    width: units.gu(40)
-    height: units.gu(46)
+    width: options.windowWidth
+    height: options.windowHeight
     title: "Freshbooks Timer"
 
-    function resetDimensions() {
-        width: units.gu(40)
-        height: units.gu(46)
-    }
+    onWidthChanged: options.windowWidth = width
+    onHeightChanged: options.windowHeight = height
 
     MainView {
 
@@ -77,8 +75,8 @@ Window {
             }
 
             onCurrentPageChanged: {
-                topWindow.width = currentPage.windowWidth ? currentPage.windowWidth : units.gu(40)
-                topWindow.height = currentPage.windowHeight ? currentPage.windowHeight : units.gu(46)
+                topWindow.width = currentPage.windowWidth ? currentPage.windowWidth : options.windowWidth
+                topWindow.height = currentPage.windowHeight ? currentPage.windowHeight : options.windowHeight
             }
 
             Page {
