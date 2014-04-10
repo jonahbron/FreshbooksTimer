@@ -4,12 +4,15 @@ import Ubuntu.Components 0.1
 Row {
     property alias currentTime: currentTime
     spacing: units.gu(1)
+    anchors.left: parent.left
+    anchors.right: parent.right
 
     Label {
         id: currentTime
         text: "00:00:00"
         fontSize: "x-large"
-        width: (pageLayout.width / 2) - (units.gu(1) / 2)
+        width: start.width
+        height: start.height
         horizontalAlignment: Text.AlignHCenter
         property int time: 0
         property int lastTime: 0
@@ -66,9 +69,9 @@ Row {
         id: currentTimeInput
         errorHighlight: false
         width: currentTime.width
+        height: currentTime.height
         text: "0.0"
         font.pixelSize: FontUtils.sizeToPixels("large")
-        height: start.height
         visible: !currentTime.visible
         onVisibleChanged: {
             text = String((currentTime.time / 3600).toFixed(3))
@@ -87,7 +90,8 @@ Row {
 
     GreenButton {
         id: start
-        width: (pageLayout.width / 2) - (units.gu(1) / 2)
+        width: (parent.width / 2) - units.gu(0.5)
+        height: units.gu(6.2)
         visible: !ticker.running && !currentTimeInput.visible
         text: "Start"
         onClicked: currentTime.startTimer()

@@ -4,6 +4,7 @@ import QtQuick.XmlListModel 2.0
 import Ubuntu.Components 0.1
 import Ubuntu.Components.ListItems 0.1
 import Ubuntu.Components.Popups 0.1
+import Ubuntu.Layouts 0.1
 import "components"
 import "left_zero_pad.js" as LeftZeroPad
 import "parse_query.js" as ParseQuery
@@ -107,76 +108,125 @@ Window {
                     id: tasks
                 }
 
-                Column {
+                Layouts {
+                    objectName: "layouts"
                     id: pageLayout
 
-                    anchors {
-                        fill: parent
-                        margins: root.margins
-                    }
+                    anchors.fill: parent
+                    layouts: [
+                        ConditionalLayout {
+                            name: "row"
+                            when: pageLayout.width > units.gu(50)
 
-                    spacing: units.gu(1)
+                            Column {
+                                anchors.fill: parent
+                                anchors.margins: units.gu(1)
+                                spacing: units.gu(1)
 
-                    TaskTimer {
-                        id: timer
-                    }
+                                ItemLayout {
+                                    item: "timer"
+                                    anchors.left: parent.left
+                                    anchors.right: parent.right
+                                    height: units.gu(6.2)
+                                }
+                                ItemLayout {
+                                    item: "projectSelector"
+                                    anchors.left: parent.left
+                                    anchors.right: parent.right
+                                    height: Math.max(projectSelector.implicitHeight, units.gu(6.2))
+                                }
+                                ItemLayout {
+                                    item: "taskSelector"
+                                    anchors.left: parent.left
+                                    anchors.right: parent.right
+                                    height: Math.max(taskSelector.implicitHeight, units.gu(6.2))
+                                }
+                                ItemLayout {
+                                    item: "save"
+                                    anchors.left: parent.left
+                                    anchors.right: parent.right
+                                    height: units.gu(6.2)
+                                }
+                                ItemLayout {
+                                    item: "indicators"
+                                    anchors.left: parent.left
+                                    anchors.right: parent.right
+                                    height: units.gu(6.2)
+                                }
+                            }
+                        }
 
-                    Row {
+                    ]
+
+
+                    Column {
+                        anchors.fill: parent
+                        anchors.margins: units.gu(1)
+                        spacing: units.gu(1)
+
+                        TaskTimer {
+                            id: timer
+                            Layouts.item: "timer"
+                        }
 
                         ProjectSelector {
                             id: projectSelector
+                            anchors.left: parent.left
+                            anchors.right: parent.right
+                            height: units.gu(6.2)
+                            Layouts.item: "projectSelector"
                         }
-                    }
-
-                    Row {
                         TaskSelector {
                             id: taskSelector
+                            anchors.left: parent.left
+                            anchors.right: parent.right
+                            height: units.gu(6.2)
+                            Layouts.item: "taskSelector"
                         }
-                    }
-
-                    Row {
-
                         SaveButton {
                             id: save
+                            anchors.left: parent.left
+                            anchors.right: parent.right
+                            height: units.gu(6.2)
+                            Layouts.item: "save"
                         }
-                    }
-
-                    Row {
-
-                        ActivityIndicator {
-                            width: pageLayout.width
-                            visible: save.isSaving
-                            running: save.isSaving
-                        }
-
-                        Timer {
-                            id: savedTimer
-                            interval: 2000
-                            running: false
-                            repeat: false
-                        }
-
-                        Label {
-                            visible: savedTimer.running
-                            text: "Saved"
-                            horizontalAlignment: Text.AlignHCenter
-                            width: pageLayout.width
-                            fontSize: "large"
-                        }
-
                         Timer {
                             id: cannotTimer
                             interval: 2000
                             running: false
                             repeat: false
                         }
+                        Timer {
+                            id: savedTimer
+                            interval: 2000
+                            running: false
+                            repeat: false
+                        }
+                        Item {
+                            Layouts.item: "indicators"
 
-                        Label {
-                            visible: cannotTimer.running
-                            text: "Cannot save time entry"
-                            horizontalAlignment: Text.AlignHCenter
-                            width: pageLayout.width
-                            fontSize: "large"
+                            ActivityIndicator {
+                                anchors.left: parent.left
+                                anchors.right: parent.right
+                                visible: save.isSaving
+                                running: save.isSaving
+                            }
+                            Label {
+                                visible: savedTimer.running
+                                text: "Saved"
+                                horizontalAlignment: Text.AlignHCenter
+                                fontSize: "large"
+                                anchors.left: parent.left
+                                anchors.right: parent.right
+                            }
+                            Label {
+                                visible: cannotTimer.running
+                                text: "Cannot save time entry"
+                                horizontalAlignment: Text.AlignHCenter
+                                fontSize: "large"
+                                anchors.left: parent.left
+                                anchors.right: parent.right
+                            }
                         }
                     }
                 }

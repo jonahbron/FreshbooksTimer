@@ -3,7 +3,8 @@ import Ubuntu.Components 0.1
 import "../oauth.js" as OAuth
 
 GreenButton {
-    width: pageLayout.width
+    width: parent.width
+    height: units.gu(6)
     text: "Save"
     property bool isSaving: false
     onClicked: {
