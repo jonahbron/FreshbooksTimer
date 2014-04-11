@@ -114,11 +114,11 @@ Window {
 
                     anchors.fill: parent
                     onCurrentLayoutChanged: {
-                        if (currentLayout === tabletSize.name) {
-                            projectSelector.expanded = true
-                        } else {
-                            projectSelector.expanded = false
-                        }
+//                        if (currentLayout === tabletSize.name) {
+//                            projectSelector.expanded = true
+//                        } else {
+//                            projectSelector.expanded = false
+//                        }
                     }
 
                     layouts: [
@@ -239,6 +239,7 @@ Window {
                             anchors.left: parent.left
                             anchors.right: parent.right
                             height: units.gu(6.2)
+                            expanded: pageLayout.currentLayout == tabletSize.name && !taskSelector.currentlyExpanded
                             Layouts.item: "projectSelector"
                         }
                         TaskSelector {

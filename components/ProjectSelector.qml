@@ -5,12 +5,13 @@ OptionSelector {
     id: projectSelector
     property int projectIndex: 0
     width: pageLayout.width
-    containerHeight: pageLayout.height / 2
+    containerHeight: pageLayout.height - itemHeight - units.gu(3)
     model: projects
     delegate: OptionSelectorDelegate {
         text: name
         onClicked: {
             projectSelector.projectIndex = index
+            tasks.xml = ""
             tasks.loadByProjectId(projects.getProjectId(index))
         }
     }

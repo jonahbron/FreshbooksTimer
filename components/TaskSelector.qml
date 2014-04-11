@@ -4,7 +4,7 @@ import Ubuntu.Components 0.1
 OptionSelector {
     property int taskIndex: 0
     width: pageLayout.width
-    containerHeight: pageLayout.height / 2
+    containerHeight: pageLayout.height - itemHeight - units.gu(3)
     model: tasks
     delegate: OptionSelectorDelegate {
         text: name
