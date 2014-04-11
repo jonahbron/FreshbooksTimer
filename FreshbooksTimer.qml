@@ -94,6 +94,17 @@ Window {
                             onTriggered: pageStack.push(settings)
                         }
                     }
+                    ToolbarButton {
+                        action: Action {
+                            text: "Reload"
+                            iconSource: Qt.resolvedUrl("img/reload.svg")
+                            onTriggered: {
+                                projects.xml = ""
+                                tasks.xml = ""
+                                projects.load()
+                            }
+                        }
+                    }
                 }
 
                 ProjectListModel {
@@ -113,14 +124,6 @@ Window {
                     id: pageLayout
 
                     anchors.fill: parent
-                    onCurrentLayoutChanged: {
-//                        if (currentLayout === tabletSize.name) {
-//                            projectSelector.expanded = true
-//                        } else {
-//                            projectSelector.expanded = false
-//                        }
-                    }
-
                     layouts: [
                         ConditionalLayout {
                             name: "1-column"

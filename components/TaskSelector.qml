@@ -5,7 +5,7 @@ OptionSelector {
     property int taskIndex: 0
     width: pageLayout.width
     containerHeight: pageLayout.height - itemHeight - units.gu(3)
-    model: tasks
+    model: tasks.count > 0 ? tasks : emptyList
     delegate: OptionSelectorDelegate {
         text: name
         onClicked: {
@@ -19,5 +19,10 @@ OptionSelector {
         visible: running
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.verticalCenter: parent.verticalCenter
+    }
+
+    ListModel {
+        id: emptyList
+        ListElement { name: "" }
     }
 }
