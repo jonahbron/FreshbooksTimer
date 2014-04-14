@@ -242,7 +242,7 @@ Window {
                             anchors.left: parent.left
                             anchors.right: parent.right
                             height: units.gu(6.2)
-                            expanded: pageLayout.currentLayout == tabletSize.name && !taskSelector.currentlyExpanded
+                            currentlyExpanded: pageLayout.currentLayout == tabletSize.name && !taskSelector.currentlyExpanded
                             Layouts.item: "projectSelector"
                         }
                         TaskSelector {
